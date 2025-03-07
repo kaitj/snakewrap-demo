@@ -67,7 +67,6 @@ parse_args:
   #--- additional BIDS-app options --- (add in below) --#
   --bet_fractional_intensity:
     help: "Fractional intensity paramter ('-f') for FSL's BET."
-    default: 0.5
 
 #-----------------------------------------------------#
 

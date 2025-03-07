@@ -25,6 +25,8 @@ wildcard_constraints:
 
 
 # ---- end snakebids boilerplate ------------------------------------------------
+from pathlib import Path
+
 import niwrap_helper
 from niwrap import fsl
 
@@ -34,9 +36,9 @@ rule bet:
     input:
         t1w = inputs["t1w"].path
     params:
-        fractional_intensity = config.get("bet_fractional_intensity", 0.5)
+        fractional_intensity = config.get("bet_fractional_intensity")
     output:
-        brain = niwrap_helper.bids_path(
+        brain = Path(config["output_dir"]) / niwrap_helper.bids_path(
             desc="brain",
             suffix="T1w",
             ext=".nii.gz",
