@@ -67,11 +67,7 @@ parse_args:
   #--- additional BIDS-app options --- (add in below) --#
   --bet_fractional_intensity:
     help: "Fractional intensity paramter ('-f') for FSL's BET."
-
 #-----------------------------------------------------#
 
 # Workflow specific config
-
-# Containers
-singularity:
-  fsl: "docker://brainlife/fsl:6.0.4-patched2"
+containers: /home/jkai/repository/00_sandbox/snakewrap/src/snakewrap/config/containers.yaml

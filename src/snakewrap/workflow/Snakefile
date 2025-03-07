@@ -30,26 +30,29 @@ from pathlib import Path
 import niwrap_helper
 from niwrap import fsl
 
-_, runner = niwrap_helper.setup_styx(runner="local") # type: ignore
+_, runner = niwrap_helper.setup_styx(
+    image_map=config["containers"],
+    runner="singularity"
+)
+Path(config["output_dir"]).mkdir(parents=True, exist_ok=True)
 
 rule bet:
     input:
-        t1w = inputs["t1w"].path
+        t1w = inputs["T1w"].path
     params:
         fractional_intensity = config.get("bet_fractional_intensity")
     output:
-        brain = Path(config["output_dir"]) / niwrap_helper.bids_path(
+        brain = Path(config["output_dir"]) / bids(
+            datatype="anat",
             desc="brain",
             suffix="T1w",
-            ext=".nii.gz",
-            **inputs["T1w"].subj_wildcards,
+            extension=".nii.gz",
+            **inputs.subj_wildcards
         )
-    container:
-        config["singularity"]["fsl"]
     run:
         fsl.bet(
-            infile=t1w,
-            maskfile=brain,
+            infile=input.t1w,
+            maskfile=output.brain.strip(".nii.gz"), 
             fractional_intensity=params.fractional_intensity
         )
 
