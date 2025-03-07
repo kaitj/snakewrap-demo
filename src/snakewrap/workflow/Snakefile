@@ -27,16 +27,21 @@ wildcard_constraints:
 # ---- end snakebids boilerplate ------------------------------------------------
 from pathlib import Path
 
-import niwrap_helper
-from niwrap import fsl
+from niwrap import fsl, use_singularity
 
-_, runner = niwrap_helper.setup_styx(
-    image_map=config["containers"],
-    runner="singularity"
-)
+
 Path(config["output_dir"]).mkdir(parents=True, exist_ok=True)
 
-rule bet:
+def setup_runner() -> None:
+    """Setup runner as function in case needed as function."""
+    use_singularity(
+        images={
+            "brainlife/fsl:6.0.4-patched2": "/home/jkai/repository/00_sandbox/snakewrap/src/snakewrap/resources/containers/fsl_6.0.4-patched2.sif"
+        }
+    )
+
+
+rule anat_wf:
     input:
         t1w = inputs["T1w"].path
     params:
@@ -50,6 +55,8 @@ rule bet:
             **inputs.subj_wildcards
         )
     run:
+        setup_runner()
+
         fsl.bet(
             infile=input.t1w,
             maskfile=output.brain.strip(".nii.gz"), 
@@ -58,4 +65,4 @@ rule bet:
 
 rule all:
     input:
-        inputs["T1w"].expand(rules.bet.output.brain)
+        inputs["T1w"].expand(rules.anat_wf.output.brain)

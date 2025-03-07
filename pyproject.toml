@@ -8,11 +8,7 @@ authors = [
 readme = "README.md"
 requires-python = "~=3.11"
 license = "MIT"
-dependencies = [
-    "niwrap>=0.5.0",
-    "niwrap-helper>=0.1.0",
- "snakebids>=0.14.0",
-]
+dependencies = ["niwrap>=0.5.1", "snakebids>=0.14.0"]
 
 [project.scripts]
 snakewrap = "snakewrap.run:main"
