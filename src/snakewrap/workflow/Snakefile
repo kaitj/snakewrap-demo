@@ -1,0 +1,56 @@
+# ---- begin snakebids boilerplate ----------------------------------------------
+
+from snakebids import bids, filter_list, generate_inputs, get_wildcard_constraints
+
+
+configfile: "config/snakebids.yml"
+
+
+# writes inputs_config.yml and updates config dict
+inputs = generate_inputs(
+    bids_dir=config["bids_dir"],
+    pybids_inputs=config["pybids_inputs"],
+    pybids_config=["bids", "derivatives"],
+    pybidsdb_dir=config.get("pybidsdb_dir"),
+    pybidsdb_reset=config.get("pybidsdb_reset"),
+    derivatives=config["derivatives"],
+    participant_label=config["participant_label"],
+    exclude_participant_label=config["exclude_participant_label"],
+)
+
+
+# this adds constraints to the bids naming
+wildcard_constraints:
+    **get_wildcard_constraints(config["pybids_inputs"]),
+
+
+# ---- end snakebids boilerplate ------------------------------------------------
+import niwrap_helper
+from niwrap import fsl
+
+_, runner = niwrap_helper.setup_styx(runner="local") # type: ignore
+
+rule bet:
+    input:
+        t1w = inputs["t1w"].path
+    params:
+        fractional_intensity = config.get("bet_fractional_intensity", 0.5)
+    output:
+        brain = niwrap_helper.bids_path(
+            desc="brain",
+            suffix="T1w",
+            ext=".nii.gz",
+            **inputs["T1w"].subj_wildcards,
+        )
+    container:
+        config["singularity"]["fsl"]
+    run:
+        fsl.bet(
+            infile=t1w,
+            maskfile=brain,
+            fractional_intensity=params.fractional_intensity
+        )
+
+rule all:
+    input:
+        inputs["T1w"].expand(rules.bet.output.brain)

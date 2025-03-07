@@ -1,0 +1,14 @@
+{
+    "Name": "SnakeWrap",
+    "BIDSVersion": "1.9.0",
+    "DatasetType": "derivative",
+    "GeneratedBy": [
+        {
+            "Name": "SnakeWrap",
+            "Version": "0.1.0",
+            "CodeURL": "https://github.com/kaitj/snakewrap",
+            "Author": "Jason Kai",
+            "AuthorEmail": "21226986+kaitj@users.noreply.github.com"
+        }
+    ]
+}

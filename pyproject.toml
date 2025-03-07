@@ -10,6 +10,9 @@ requires-python = "~=3.11"
 license = "MIT"
 dependencies = ["niwrap>=0.5.0", "snakebids>=0.14.0"]
 
+[project.scripts]
+snakewrap = "snakewrap.run:main"
+
 [dependency-groups]
 dev = [
     "mypy>=1.15.0",
