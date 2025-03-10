@@ -1,5 +1,4 @@
-# SnakeWrap
+# SnakeWrap (Snakebids x NiWrap)
 
-A demo package higlighting the use of [Snakebids](https://github.com/khanlab/snakebids) with [NiWrap](https://github.com/styx-api/niwrap).
-
-_(Using [`ds000102`](https://openneuro.org/datasets/ds000102/versions/00001) to test - data not uploaded)_
+A demo package higlighting the use of [NiWrap](https://github.com/styx-api/niwrap) with
+[Snakebids](https://github.com/khanlab/snakebids).

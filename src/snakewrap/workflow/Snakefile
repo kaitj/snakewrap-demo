@@ -27,16 +27,19 @@ wildcard_constraints:
 # ---- end snakebids boilerplate ------------------------------------------------
 from pathlib import Path
 
-from niwrap import fsl, use_singularity
+from niwrap import ants, fsl, use_singularity
 
 
 Path(config["output_dir"]).mkdir(parents=True, exist_ok=True)
 
+
 def setup_runner() -> None:
-    """Setup runner as function in case needed as function."""
+    """Setup runner as function in case for parallelization across nodes.
+    """
     use_singularity(
         images={
-            "brainlife/fsl:6.0.4-patched2": "/home/jkai/repository/00_sandbox/snakewrap/src/snakewrap/resources/containers/fsl_6.0.4-patched2.sif"
+            "brainlife/fsl:6.0.4-patched2": config["containers"]["fsl"],
+            "antsx/ants:v2.5.3": config["containers"]["ants"]
         }
     )
 
@@ -47,9 +50,9 @@ rule anat_wf:
     params:
         fractional_intensity = config.get("bet_fractional_intensity")
     output:
-        brain = Path(config["output_dir"]) / bids(
+        n4 = Path(config["output_dir"]) / bids(
             datatype="anat",
-            desc="brain",
+            desc="N4",
             suffix="T1w",
             extension=".nii.gz",
             **inputs.subj_wildcards
@@ -57,12 +60,19 @@ rule anat_wf:
     run:
         setup_runner()
 
-        fsl.bet(
+        # FSL Bet
+        bet = fsl.bet(
             infile=input.t1w,
-            maskfile=output.brain.strip(".nii.gz"), 
             fractional_intensity=params.fractional_intensity
+        )
+
+        # ANTs N4 Correction
+        ants.n4_bias_field_correction(
+            input_image=bet.outfile,
+            image_dimensionality=3,
+            corrected_image_path=output.n4
         )
 
 rule all:
     input:
-        inputs["T1w"].expand(rules.anat_wf.output.brain)
+        inputs["T1w"].expand(rules.anat_wf.output.n4)

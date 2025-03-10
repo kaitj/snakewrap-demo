@@ -66,8 +66,10 @@ parse_args:
 
   #--- additional BIDS-app options --- (add in below) --#
   --bet_fractional_intensity:
-    help: "Fractional intensity paramter ('-f') for FSL's BET."
+    help: "Fractional intensity parameter ('-f') for FSL's BET."
 #-----------------------------------------------------#
 
 # Workflow specific config
-containers: /home/jkai/repository/00_sandbox/snakewrap/src/snakewrap/config/containers.yaml
+containers:
+  fsl: /path/to/singularity/fsl/container
+  ants: /pants/to/singularity/ants/container
